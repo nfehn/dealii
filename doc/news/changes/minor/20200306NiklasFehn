@@ -1,0 +1,6 @@
+New: LinearAlgebra::VectorSpaceVector::set_zero_mean_value()
+Add public interface that allows to shift a vector by a constant value in a
+way that its mean value becomes zero. This function only makes use of the
+pure virtual interfaces add() and mean_value().
+<br>
+(Niklas Fehn, 2020/03/06)

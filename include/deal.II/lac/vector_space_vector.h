@@ -177,6 +177,17 @@ namespace LinearAlgebra
     mean_value() const = 0;
 
     /**
+     * Shift all entries of the vector by a constant factor so that the mean
+     * value of the vector becomes zero.
+     */
+    void
+    set_zero_mean_value()
+    {
+      this->add(-this->mean_value());
+    }
+
+
+    /**
      * Return the l<sub>1</sub> norm of the vector (i.e., the sum of the
      * absolute values of all entries among all processors).
      */
