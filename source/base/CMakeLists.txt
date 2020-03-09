@@ -45,7 +45,8 @@ SET(_unity_include_src
   logstream.cc
   hdf5.cc
   mpi.cc
-  mpi_consensus_algorithm.cc
+  mpi_consensus_algorithms.cc
+  mpi_noncontiguous_partitioner.cc
   mu_parser_internal.cc
   multithread_info.cc
   named_selection.cc
@@ -125,6 +126,7 @@ SET(_inst
   geometric_utilities.inst.in
   hdf5.inst.in
   mpi.inst.in
+  mpi_noncontiguous_partitioner.inst.in
   partitioner.inst.in
   partitioner.cuda.inst.in
   polynomials_rannacher_turek.inst.in

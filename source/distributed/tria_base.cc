@@ -52,9 +52,7 @@ namespace parallel
     , n_subdomains(Utilities::MPI::n_mpi_processes(this->mpi_communicator))
   {
 #ifndef DEAL_II_WITH_MPI
-    Assert(false,
-           ExcMessage("You compiled deal.II without MPI support, for "
-                      "which parallel::TriangulationBase is not available."));
+    Assert(false, ExcNeedsMPI());
 #endif
   }
 
@@ -67,9 +65,7 @@ namespace parallel
   {
 #ifndef DEAL_II_WITH_MPI
     (void)other_tria;
-    Assert(false,
-           ExcMessage("You compiled deal.II without MPI support, for "
-                      "which parallel::TriangulationBase is not available."));
+    Assert(false, ExcNeedsMPI());
 #else
     dealii::Triangulation<dim, spacedim>::copy_triangulation(other_tria);
 
@@ -197,10 +193,7 @@ namespace parallel
 
     {
       // find ghost owners
-      for (typename Triangulation<dim, spacedim>::active_cell_iterator cell =
-             this->begin_active();
-           cell != this->end();
-           ++cell)
+      for (const auto &cell : this->active_cell_iterators())
         if (cell->is_ghost())
           number_cache.ghost_owners.insert(cell->subdomain_id());
 
@@ -210,10 +203,7 @@ namespace parallel
     }
 
     if (this->n_levels() > 0)
-      for (typename Triangulation<dim, spacedim>::active_cell_iterator cell =
-             this->begin_active();
-           cell != this->end();
-           ++cell)
+      for (const auto &cell : this->active_cell_iterators())
         if (cell->subdomain_id() == my_subdomain)
           ++number_cache.n_locally_owned_active_cells;
 
