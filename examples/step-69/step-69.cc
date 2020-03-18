@@ -82,6 +82,10 @@
 #include <boost/range/irange.hpp>
 #include <boost/range/iterator_range.hpp>
 
+// For std::isnan, std::isinf, and std::ifstream
+#include <cmath>
+#include <fstream>
+
 // @sect3{Class template declarations}
 //
 // We begin our actual implementation by declaring all classes with their
@@ -1547,10 +1551,10 @@ namespace Step69
       // conserved quantities. The return array consists of density $\rho$,
       // velocity $u$, pressure $p$ and local speed of sound $a$:
 
-      return {projected_U[0],
-              projected_U[1] / projected_U[0],
-              ProblemDescription<1>::pressure(projected_U),
-              ProblemDescription<1>::speed_of_sound(projected_U)};
+      return {{projected_U[0],
+               projected_U[1] / projected_U[0],
+               ProblemDescription<1>::pressure(projected_U),
+               ProblemDescription<1>::speed_of_sound(projected_U)}};
     }
 
     // At this point we also define two small functions that return the
@@ -1704,22 +1708,16 @@ namespace Step69
   // naming the corresponding components:
 
   template <>
-  const std::array<std::string, 3> ProblemDescription<1>::component_names{"rho",
-                                                                          "m",
-                                                                          "E"};
+  const std::array<std::string, 3> ProblemDescription<1>::component_names{
+    {"rho", "m", "E"}};
 
   template <>
-  const std::array<std::string, 4> ProblemDescription<2>::component_names{"rho",
-                                                                          "m_1",
-                                                                          "m_2",
-                                                                          "E"};
+  const std::array<std::string, 4> ProblemDescription<2>::component_names{
+    {"rho", "m_1", "m_2", "E"}};
 
   template <>
-  const std::array<std::string, 5> ProblemDescription<3>::component_names{"rho",
-                                                                          "m_1",
-                                                                          "m_2",
-                                                                          "m_3",
-                                                                          "E"};
+  const std::array<std::string, 5> ProblemDescription<3>::component_names{
+    {"rho", "m_1", "m_2", "m_3", "E"}};
 
   // @sect4{Initial values}
 
@@ -2066,9 +2064,11 @@ namespace Step69
 
       // This is a good point to verify that the computed
       // <code>tau_max</code> is indeed a valid floating point number.
-      AssertThrow(!std::isnan(tau_max) && !std::isinf(tau_max) && tau_max > 0.,
-                  ExcMessage("I'm sorry, Dave. I'm afraid I can't "
-                             "do that. - We crashed."));
+      AssertThrow(
+        !std::isnan(tau_max.load()) && !std::isinf(tau_max.load()) &&
+          tau_max.load() > 0.,
+        ExcMessage(
+          "I'm sorry, Dave. I'm afraid I can't do that. - We crashed."));
     }
 
     // <b>Step 3</b>: Perform update.

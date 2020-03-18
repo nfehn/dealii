@@ -334,17 +334,19 @@ MatrixFree<dim, Number, VectorizedArrayType>::copy_from(
   const MatrixFree<dim, Number, VectorizedArrayType> &v)
 {
   clear();
-  dof_handlers              = v.dof_handlers;
-  dof_info                  = v.dof_info;
-  constraint_pool_data      = v.constraint_pool_data;
-  constraint_pool_row_index = v.constraint_pool_row_index;
-  mapping_info              = v.mapping_info;
-  shape_info                = v.shape_info;
-  cell_level_index          = v.cell_level_index;
-  task_info                 = v.task_info;
-  indices_are_initialized   = v.indices_are_initialized;
-  mapping_is_initialized    = v.mapping_is_initialized;
-  mg_level                  = v.mg_level;
+  dof_handlers               = v.dof_handlers;
+  dof_info                   = v.dof_info;
+  constraint_pool_data       = v.constraint_pool_data;
+  constraint_pool_row_index  = v.constraint_pool_row_index;
+  mapping_info               = v.mapping_info;
+  shape_info                 = v.shape_info;
+  cell_level_index           = v.cell_level_index;
+  cell_level_index_end_local = v.cell_level_index_end_local;
+  task_info                  = v.task_info;
+  face_info                  = v.face_info;
+  indices_are_initialized    = v.indices_are_initialized;
+  mapping_is_initialized     = v.mapping_is_initialized;
+  mg_level                   = v.mg_level;
 }
 
 
@@ -679,6 +681,25 @@ MatrixFree<dim, Number, VectorizedArrayType>::internal_reinit(
       mapping_is_initialized = true;
     }
 }
+
+
+
+template <int dim, typename Number, typename VectorizedArrayType>
+void
+MatrixFree<dim, Number, VectorizedArrayType>::update_mapping(
+  const Mapping<dim> &mapping)
+{
+  AssertDimension(shape_info.size(1), mapping_info.cell_data.size());
+  mapping_info.update_mapping(
+    dof_handlers.active_dof_handler == DoFHandlers::hp ?
+      dof_handlers.hp_dof_handler[0]->get_triangulation() :
+      dof_handlers.dof_handler[0]->get_triangulation(),
+    cell_level_index,
+    face_info,
+    dof_info[0].cell_active_fe_index,
+    mapping);
+}
+
 
 
 template <int dim, typename Number, typename VectorizedArrayType>
